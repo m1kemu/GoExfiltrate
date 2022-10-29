@@ -1,21 +1,27 @@
 package main
 
-import "goexfiltrate/servers"
+import (
+	"goexfiltrate/servers"
+
+	log "github.com/sirupsen/logrus"
+)
 
 func main() {
-	/*
-	server := servers.TCPServer {
-		BindIP: "127.0.0.1",
-		BindPort: "4444",
-		FilePath: "/tmp/tcp_output.out",
-	}
-	*/
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetLevel(log.DebugLevel)
 
-	server := servers.UDPServer {
-		BindIP: "127.0.0.1",
+	control_server := servers.ControlServer{
+		BindIP:   "127.0.0.1",
 		BindPort: "4444",
-		FilePath: "/tmp/udp_output.out",
+		Key:      []byte("passwordpassword"),
 	}
 
-	server.Listen()
+	tcp_server := servers.TCPServer{
+		BindIP:   "127.0.0.1",
+		BindPort: "8080",
+		Key:      []byte("passwordpassword"),
+	}
+
+	go control_server.Listen()
+	go tcp_server.Listen()
 }
